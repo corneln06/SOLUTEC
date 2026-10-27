@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @Operation(summary = "Create user", description = "Create a new user with his role in the app")
-    @PostMapping("/create")
+    @PostMapping("/sign-up")
     public ResponseEntity<User> createUser(@RequestBody User user){
         userService.addUser(user);
 
