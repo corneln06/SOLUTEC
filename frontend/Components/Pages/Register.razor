@@ -1,0 +1,72 @@
+@page "/register"
+@using Solutec.Frontend.Models
+@using Solutec.Frontend.Services
+@inject IAuthService Auth
+@inject NavigationManager Nav
+
+<PageTitle>Sign up</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <h1>Sign up</h1>
+        <p class="subtitle">Create your SOLUTEC account</p>
+
+        <EditForm Model="model" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+
+            <div class="field">
+                <label for="userName">Username</label>
+                <InputText id="userName" @bind-Value="model.UserName" />
+                <ValidationMessage For="() => model.UserName" />
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" @bind-Value="model.Password" />
+                <ValidationMessage For="() => model.Password" />
+            </div>
+
+            <div class="field">
+                <label for="confirmPassword">Confirm password</label>
+                <InputText id="confirmPassword" type="password" @bind-Value="model.ConfirmPassword" />
+                <ValidationMessage For="() => model.ConfirmPassword" />
+            </div>
+
+            @if (error is not null)
+            {
+                <p class="form-error">@error</p>
+            }
+
+            <button type="submit" class="btn" disabled="@busy">
+                @(busy ? "Creating account..." : "Sign up")
+            </button>
+        </EditForm>
+
+        <p class="switch">Already have an account? <a href="login">Log in</a></p>
+    </div>
+</div>
+
+@code {
+    private RegisterRequest model = new();
+    private string? error;
+    private bool busy;
+
+    private async Task HandleRegister()
+    {
+        error = null;
+        busy = true;
+        try
+        {
+            await Auth.RegisterAsync(model);
+            Nav.NavigateTo("/login?registered=true");
+        }
+        catch (AuthException ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+}

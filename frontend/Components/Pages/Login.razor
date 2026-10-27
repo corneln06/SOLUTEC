@@ -1,0 +1,80 @@
+@page "/"
+@page "/login"
+@using Solutec.Frontend.Models
+@using Solutec.Frontend.Services
+@inject IAuthService Auth
+
+<PageTitle>Log in</PageTitle>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <h1>Log in</h1>
+        <p class="subtitle">Welcome back to SOLUTEC</p>
+
+        @if (Registered && success is null)
+        {
+            <p class="form-success">Account created, you can log in now.</p>
+        }
+
+        <EditForm Model="model" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <div class="field">
+                <label for="userName">Username</label>
+                <InputText id="userName" @bind-Value="model.UserName" />
+                <ValidationMessage For="() => model.UserName" />
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <InputText id="password" type="password" @bind-Value="model.Password" />
+                <ValidationMessage For="() => model.Password" />
+            </div>
+
+            @if (error is not null)
+            {
+                <p class="form-error">@error</p>
+            }
+
+            @if (success is not null)
+            {
+                <p class="form-success">@success</p>
+            }
+
+            <button type="submit" class="btn" disabled="@busy">
+                @(busy ? "Logging in..." : "Log in")
+            </button>
+        </EditForm>
+
+        <p class="switch">No account? <a href="register">Sign up</a></p>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] public bool Registered { get; set; }
+
+    private LoginRequest model = new();
+    private string? error;
+    private string? success;
+    private bool busy;
+
+    private async Task HandleLogin()
+    {
+        error = null;
+        success = null;
+        busy = true;
+        try
+        {
+            var user = await Auth.LoginAsync(model);
+            success = $"Welcome, {user.UserName}! Role: {user.Role ?? "none"}";
+        }
+        catch (AuthException ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+}
