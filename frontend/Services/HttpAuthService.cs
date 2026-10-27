@@ -40,7 +40,7 @@ public class HttpAuthService : IAuthService
 
     public async Task RegisterAsync(RegisterRequest request)
     {
-        var body = new { request.UserName, request.Password };
+        var body = new { request.UserName, request.Password, role = "WORKSHOP" };
         var response = await SendAsync(() => http.PostAsJsonAsync(RegisterUrl, body));
 
         if (!response.IsSuccessStatusCode)
