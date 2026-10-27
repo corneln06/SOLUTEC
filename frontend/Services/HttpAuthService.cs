@@ -6,8 +6,8 @@ namespace Solutec.Frontend.Services;
 
 public class HttpAuthService : IAuthService
 {
-    private const string LoginUrl = "api/auth/login";
-    private const string RegisterUrl = "api/auth/register";
+    private const string LoginUrl = "api/v1/auth/login";
+    private const string RegisterUrl = "api/v1/auth/sign-up";
 
     private readonly HttpClient http;
 
@@ -18,8 +18,11 @@ public class HttpAuthService : IAuthService
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
-        var body = new { request.UserName, request.Password };
-        var response = await SendAsync(LoginUrl, body);
+        // Backend expects GET /login?userName=...&password=...
+        var url = $"{LoginUrl}?userName={Uri.EscapeDataString(request.UserName)}" +
+                  $"&password={Uri.EscapeDataString(request.Password)}";
+
+        var response = await SendAsync(() => http.GetAsync(url));
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             throw new AuthException("Wrong username or password.");
@@ -27,6 +30,7 @@ public class HttpAuthService : IAuthService
         if (!response.IsSuccessStatusCode)
             throw new AuthException("Something went wrong. Try again later.");
 
+        // Backend returns the whole User; we only read userName and role, the rest is ignored
         var user = await response.Content.ReadFromJsonAsync<LoginResponse>();
         if (user is null)
             throw new AuthException("The server sent an invalid response.");
@@ -36,26 +40,19 @@ public class HttpAuthService : IAuthService
 
     public async Task RegisterAsync(RegisterRequest request)
     {
-        // only send what the backend needs
         var body = new { request.UserName, request.Password };
-        var response = await SendAsync(RegisterUrl, body);
-
-        if (response.StatusCode == HttpStatusCode.Conflict)
-            throw new AuthException("This username is already taken.");
-
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-            throw new AuthException("Some of the details are invalid.");
+        var response = await SendAsync(() => http.PostAsJsonAsync(RegisterUrl, body));
 
         if (!response.IsSuccessStatusCode)
             throw new AuthException("Something went wrong. Try again later.");
     }
 
-    // sends the post, announces the user when server is down
-    private async Task<HttpResponseMessage> SendAsync(string url, object body)
+    // Runs the request; turns "server is down" into a friendly message instead of a crash
+    private static async Task<HttpResponseMessage> SendAsync(Func<Task<HttpResponseMessage>> request)
     {
         try
         {
-            return await http.PostAsJsonAsync(url, body);
+            return await request();
         }
         catch (HttpRequestException)
         {
