@@ -1,6 +1,6 @@
-package com.example.demo.Service;
+package dk.via.solutec.Service;
 
-import com.example.demo.Model.User;
+import dk.via.solutec.Model.User;
 
 import java.util.List;
 

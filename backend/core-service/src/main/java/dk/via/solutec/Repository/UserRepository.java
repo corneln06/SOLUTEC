@@ -1,6 +1,6 @@
-package com.example.demo.Repository;
+package dk.via.solutec.Repository;
 
-import com.example.demo.Model.User;
+import dk.via.solutec.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

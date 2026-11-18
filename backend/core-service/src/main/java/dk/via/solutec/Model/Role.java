@@ -1,4 +1,4 @@
-package com.example.demo.Model;
+package dk.via.solutec.Model;
 
 public enum Role {
     ADMIN,

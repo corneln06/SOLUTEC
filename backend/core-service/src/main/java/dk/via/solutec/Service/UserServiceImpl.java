@@ -1,7 +1,7 @@
-package com.example.demo.Service;
+package dk.via.solutec.Service;
 
-import com.example.demo.Model.User;
-import com.example.demo.Repository.UserRepository;
+import dk.via.solutec.Model.User;
+import dk.via.solutec.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

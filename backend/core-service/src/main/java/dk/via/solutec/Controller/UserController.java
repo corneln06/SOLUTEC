@@ -1,7 +1,7 @@
-package com.example.demo.Controller;
+package dk.via.solutec.Controller;
 
-import com.example.demo.Model.User;
-import com.example.demo.Service.UserService;
+import dk.via.solutec.Model.User;
+import dk.via.solutec.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
