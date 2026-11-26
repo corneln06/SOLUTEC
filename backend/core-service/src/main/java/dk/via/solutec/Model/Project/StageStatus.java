@@ -1,4 +1,4 @@
-package dk.via.solutec.Model.Stage;
+package dk.via.solutec.Model.Project;
 
 public enum StageStatus {
     PLANNING_AND_BUDGET,
@@ -7,7 +7,7 @@ public enum StageStatus {
     CLOSURE,
     AFTERSERVICE;
 
-    public StageState toState()
+    public ProjectState toState()
     {
        return switch (this) {
             case PLANNING_AND_BUDGET -> new PlanningAndBudgetState();
