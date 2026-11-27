@@ -2,6 +2,7 @@ package dk.via.solutec.Model.Project;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import dk.via.solutec.Model.Location;
 import dk.via.solutec.Model.ProjectItem;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,10 @@ public class Project {
     private String name;
     private String phone;
     private String email;
-    private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "location_name")
+    private Location location;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
     private Date projectStart;
